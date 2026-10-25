@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Amazing Periodic Table of Elements</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'alkali-metal': '#ef4444',
+                        'alkaline-earth': '#f97316',
+                        'transition-metal': '#eab308',
+                        'post-transition': '#10b981',
+                        'metalloid': '#14b8a6',
+                        'reactive-nonmetal': '#06b6d4',
+                        'halogen': '#3b82f6',
+                        'noble-gas': '#8b5cf6',
+                        'lanthanide': '#ec4899',
+                        'actinide': '#f43f5e',
+                        'unknown': '#6b7280'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(31, 41, 55, 0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        /* Grid Layouts */
+        .pt-main-grid {
+            display: grid;
+            grid-template-columns: repeat(18, minmax(60px, 1fr));
+            grid-template-rows: repeat(7, minmax(68px, auto));
+            gap: 6px;
+        }
+
+        .pt-fblock-grid {
+            display: grid;
+            grid-template-columns: repeat(15, minmax(60px, 1fr));
+            gap: 6px;
+        }
+
+        @media (max-width: 1280px) {
+            .pt-main-grid {
+                grid-template-columns: repeat(18, minmax(50px, 1fr));
+                gap: 4px;
+            }
+            .pt-fblock-grid {
+                grid-template-columns: repeat(15, minmax(50px, 1fr));
+                gap: 4px;
+            }
+        }
+
+        /* Element Tile Animations */
+        .element-tile {
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+        .element-tile:hover {
+            transform: translateY(-4px) scale(1.08);
+            z-index: 30;
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+        }
+        .element-tile.dimmed {
+            opacity: 0.15;
+            filter: grayscale(85%);
+            transform: scale(0.94);
+        }
+        .element-tile.highlighted {
+            animation: pulse-glow 1.8s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.2); }
+            100% { box-shadow: 0 0 18px rgba(255, 255, 255, 0.7); }
+        }
+
+        /* Category Color Accents */
+        .cat-alkali-metal { border-top: 3px solid #ef4444; background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-alkaline-earth { border-top: 3px solid #f97316; background: linear-gradient(135deg, rgba(249, 115, 22, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-transition-metal { border-top: 3px solid #eab308; background: linear-gradient(135deg, rgba(234, 179, 8, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-post-transition { border-top: 3px solid #10b981; background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-metalloid { border-top: 3px solid #14b8a6; background: linear-gradient(135deg, rgba(20, 184, 166, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-reactive-nonmetal { border-top: 3px solid #06b6d4; background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-halogen { border-top: 3px solid #3b82f6; background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-noble-gas { border-top: 3px solid #8b5cf6; background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(17, 24, 39, 0.85)); }
+        .cat-lanthanide { border-top: 3px solid #ec4899; background: linear-gradient(135deg, rgba(236, 72, 153, 0.22), rgba(17, 24, 39, 0.85)); }
+        .cat-actinide { border-top: 3px solid #f43f5e; background: linear-gradient(135deg, rgba(244, 63, 94, 0.22), rgba(17, 24, 39, 0.85)); }
+
+        /* Placeholders */
+        .fblock-placeholder {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+        .fblock-placeholder:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Badge Pills */
+        .badge-solid { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-liquid { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-gas { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-synthetic { background: rgba(156, 163, 175, 0.2); color: #d1d5db; border: 1px solid rgba(156, 163, 175, 0.3); }
+
+        /* Electron Shell Visualizer */
+        .electron-orbit {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .electron {
+            width: 8px;
+            height: 8px;
+            background-color: #60a5fa;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 8px #3b82f6;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 md:p-6 text-slate-100">
+
+    <!-- HEADER & TOOLBAR -->
+    <header class="max-w-7xl mx-auto w-full mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid font-mono text-2xl font-bold text-white">Pt</i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
+                        The Amazing Periodic Table
+                    </h1>
+                    <p class="text-xs md:text-sm text-slate-400 font-medium">Standard layout with dedicated bottom f-block (Lanthanides & Actinides)</p>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                <button id="btn-random" class="px-4 py-2 rounded-xl glass-card hover:bg-slate-800/80 transition-all text-xs font-semibold flex items-center gap-2 border border-slate-700/50 text-indigo-300 hover:text-indigo-200">
+                    <i class="fa-solid fa-dice text-sm"></i>
+                    <span>Random Element</span>
+                </button>
+                <button id="btn-reset" class="px-4 py-2 rounded-xl glass-card hover:bg-slate-800/80 transition-all text-xs font-semibold flex items-center gap-2 border border-slate-700/50 text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>Reset Filters</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SEARCH AND FILTER CONTROL PANEL -->
+        <div class="glass-panel p-4 rounded-2xl shadow-xl flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center">
+            
+            <!-- Search Input -->
+            <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="search-input" placeholder="Search by name, symbol, or atomic number... (Press '/' to focus)" 
+                    class="w-full pl-11 pr-10 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm placeholder-slate-500 transition-all">
+                <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-3">
+                <!-- State Filter -->
+                <div class="w-full sm:w-auto flex-1 sm:flex-initial">
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1 ml-1">State (25°C)</label>
+                    <select id="filter-state" class="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-700/60 text-xs font-medium focus:border-indigo-500 focus:outline-none text-slate-200">
+                        <option value="all">All States</option>
+                        <option value="solid">Solid</option>
+                        <option value="liquid">Liquid</option>
+                        <option value="gas">Gas</option>
+                        <option value="synthetic">Synthetic</option>
+                    </select>
+                </div>
+
+                <!-- Block Filter -->
+                <div class="w-full sm:w-auto flex-1 sm:flex-initial">
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1 ml-1">Subshell Block</label>
+                    <select id="filter-block" class="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-700/60 text-xs font-medium focus:border-indigo-500 focus:outline-none text-slate-200">
+                        <option value="all">All Blocks</option>
+                        <option value="s">s-block</option>
+                        <option value="p">p-block</option>
+                        <option value="d">d-block</option>
+                        <option value="f">f-block</option>
+                    </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="w-full sm:w-auto flex-1 sm:flex-initial">
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1 ml-1">Category</label>
+                    <select id="filter-category" class="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-700/60 text-xs font-medium focus:border-indigo-500 focus:outline-none text-slate-200">
+                        <option value="all">All Categories</option>
+                        <option value="alkali-metal">Alkali Metals</option>
+                        <option value="alkaline-earth">Alkaline Earth Metals</option>
+                        <option value="transition-metal">Transition Metals</option>
+                        <option value="post-transition">Post-Transition Metals</option>
+                        <option value="metalloid">Metalloids</option>
+                        <option value="reactive-nonmetal">Reactive Nonmetals</option>
+                        <option value="halogen">Halogens</option>
+                        <option value="noble-gas">Noble Gases</option>
+                        <option value="lanthanide">Lanthanides (57-71)</option>
+                        <option value="actinide">Actinides (89-103)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN PERIODIC TABLE GRID CONTAINER -->
+    <main class="max-w-[1600px] mx-auto w-full overflow-x-auto pb-6">
+        
+        <!-- Legend Strip -->
+        <div id="legend-container" class="flex flex-wrap gap-2 justify-center mb-6 px-2 text-xs">
+            <!-- Dynamic Category Legend Chips -->
+        </div>
+
+        <!-- Main Periodic Table Grid (Periods 1-7, Columns 1-18) -->
+        <div id="main-periodic-table" class="pt-main-grid min-w-[1000px] mx-auto p-2">
+            <!-- Main Grid Elements injected via JS -->
+        </div>
+
+        <!-- DEDICATED BOTTOM F-BLOCK SECTION (LANTHANIDES & ACTINIDES) -->
+        <div class="min-w-[1000px] mx-auto mt-6 pt-4 border-t border-slate-800/80">
+            <div class="flex items-center justify-between mb-3 px-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-down-long text-indigo-400 text-xs"></i>
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">
+                        Inner Transition Elements (f-Block)
+                    </h2>
+                </div>
+                <span id="results-count" class="text-indigo-400 font-mono text-xs">Showing 118 / 118 Elements</span>
+            </div>
+
+            <!-- Lanthanides Row (57 - 71) -->
+            <div class="mb-2">
+                <div class="flex items-center gap-2 mb-1.5">
+                    <span class="w-3 h-3 rounded-full bg-pink-500 inline-block shadow-sm shadow-pink-500/50"></span>
+                    <span class="text-[11px] font-semibold text-pink-300 uppercase tracking-wider">Lanthanides (57–71)</span>
+                </div>
+                <div id="lanthanides-row" class="pt-fblock-grid">
+                    <!-- 15 Lanthanide Elements Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Actinides Row (89 - 103) -->
+            <div>
+                <div class="flex items-center gap-2 mb-1.5">
+                    <span class="w-3 h-3 rounded-full bg-rose-500 inline-block shadow-sm shadow-rose-500/50"></span>
+                    <span class="text-[11px] font-semibold text-rose-300 uppercase tracking-wider">Actinides (89–103)</span>
+                </div>
+                <div id="actinides-row" class="pt-fblock-grid">
+                    <!-- 15 Actinide Elements Injected via JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="max-w-7xl mx-auto w-full mt-8 pt-4 border-t border-slate-800/80 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <p>© The Amazing Periodic Table • IUPAC Standard Layout</p>
+        <p class="flex items-center gap-2">
+            <span>Tip: Click element tiles or placeholders for detailed properties</span>
+        </p>
+    </footer>
+
+    <!-- ELEMENT DETAIL MODAL -->
+    <div id="element-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-panel w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl border border-slate-700/80 transform scale-95 transition-transform duration-300" id="modal-card">
+            
+            <!-- Modal Header -->
+            <div id="modal-header-bg" class="p-6 relative bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-800">
+                <button id="modal-close" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-slate-300 hover:text-white flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                    <!-- Big Atomic Display Box -->
+                    <div id="modal-symbol-box" class="w-24 h-24 rounded-2xl flex flex-col items-center justify-center border-2 border-white/20 shadow-xl relative bg-slate-900/80 shrink-0">
+                        <span id="modal-atomic-number" class="absolute top-2 left-2.5 text-xs font-mono text-slate-400">1</span>
+                        <span id="modal-symbol" class="text-4xl font-extrabold tracking-tight text-white font-mono my-1">H</span>
+                        <span id="modal-weight" class="text-[10px] font-mono text-slate-300">1.008</span>
+                    </div>
+
+                    <div class="space-y-1.5 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h2 id="modal-name" class="text-3xl font-extrabold text-white tracking-tight">Hydrogen</h2>
+                            <span id="modal-category-badge" class="px-2.5 py-0.5 rounded-full text-xs font-medium border uppercase tracking-wider">Reactive Nonmetal</span>
+                        </div>
+                        <p id="modal-summary" class="text-xs text-slate-300 line-clamp-2 italic">The lightest chemical element and most abundant chemical substance in the Universe.</p>
+                        <div class="flex flex-wrap gap-2 pt-1">
+                            <span id="modal-state-badge" class="px-2 py-0.5 rounded text-[11px] font-medium badge-gas">Gas</span>
+                            <span id="modal-block-badge" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-medium border border-slate-700">s-block</span>
+                            <span id="modal-group-period" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-medium border border-slate-700">Group 1, Period 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Content Grid -->
+            <div class="p-6 max-h-[70vh] overflow-y-auto space-y-6">
+                
+                <!-- Quick Metric Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="glass-card p-3 rounded-xl border border-slate-800 text-center">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Electronegativity</span>
+                        <span id="modal-electronegativity" class="text-base font-bold text-slate-100 font-mono">2.20</span>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl border border-slate-800 text-center">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Melting Point</span>
+                        <span id="modal-melting" class="text-base font-bold text-slate-100 font-mono">-259.16 °C</span>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl border border-slate-800 text-center">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Boiling Point</span>
+                        <span id="modal-boiling" class="text-base font-bold text-slate-100 font-mono">-252.87 °C</span>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl border border-slate-800 text-center">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Discovered</span>
+                        <span id="modal-discovered" class="text-base font-bold text-indigo-300 font-mono">1766</span>
+                    </div>
+                </div>
+
+                <!-- Technical Properties & Shell Visualizer -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Left Column: Key Properties -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                            <i class="fa-solid fa-atom"></i> Atomic & Physical Data
+                        </h3>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/80">
+                                <span class="text-slate-400">Electron Configuration</span>
+                                <span id="modal-electron-config" class="font-mono text-slate-200">1s¹</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/80">
+                                <span class="text-slate-400">Electrons per Shell</span>
+                                <span id="modal-shells" class="font-mono text-slate-200">1</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/80">
+                                <span class="text-slate-400">Density</span>
+                                <span id="modal-density" class="font-mono text-slate-200">0.00008988 g/cm³</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-slate-800/80">
+                                <span class="text-slate-400">Discovered By</span>
+                                <span id="modal-discoverer" class="text-slate-200 font-medium">Henry Cavendish</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Interactive Electron Shell Visualizer -->
+                    <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col items-center justify-center relative min-h-[180px]">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider absolute top-3 left-3">Bohr Electron Shell Model</span>
+                        <div id="shell-visualizer" class="relative w-36 h-36 flex items-center justify-center my-2">
+                            <!-- Nucleus -->
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/50 flex items-center justify-center text-[9px] font-bold text-white z-10">
+                                <span id="modal-nucleus-symbol">H</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Uses & Applications -->
+                <div class="space-y-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb"></i> Key Uses & Applications
+                    </h3>
+                    <p id="modal-uses" class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                        Primary component of water, rocket fuel, ammonia synthesis for fertilizers, hydrogen fuel cells, and oil refining.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC & ELEMENT DATA -->
+    <script>
+        // --- COMPLETE 118 ELEMENT DATASET ---
+        const elementsData = [
+            { number: 1, symbol: "H", name: "Hydrogen", mass: "1.008", category: "reactive-nonmetal", state: "gas", group: 1, period: 1, block: "s", config: "1s¹", shells: [1], year: "1766", discoverer: "Henry Cavendish", density: "0.00008988", melt: "-259.16", boil: "-252.87", electronegativity: "2.20", summary: "Lightest chemical element; highly flammable gas abundant in stars and water.", uses: "Rocket fuel, ammonia production, fuel cells, petroleum refining." },
+            { number: 2, symbol: "He", name: "Helium", mass: "4.0026", category: "noble-gas", state: "gas", group: 18, period: 1, block: "p", config: "1s²", shells: [2], year: "1868", discoverer: "Pierre Janssen, Norman Lockyer", density: "0.0001785", melt: "-272.20", boil: "-268.93", electronegativity: "N/A", summary: "Colorless, odorless, inert noble gas; second most abundant element in universe.", uses: "Cooling MRI magnets, party balloons, deep-sea diving gas mixes, arc welding." },
+            { number: 3, symbol: "Li", name: "Lithium", mass: "6.94", category: "alkali-metal", state: "solid", group: 1, period: 2, block: "s", config: "[He] 2s¹", shells: [2, 1], year: "1817", discoverer: "Johan August Arfwedson", density: "0.534", melt: "180.50", boil: "1342", electronegativity: "0.98", summary: "Soft, silvery alkali metal; least dense of all solid elements.", uses: "Rechargeable batteries, mood-stabilizing medication, lightweight alloys, ceramics." },
+            { number: 4, symbol: "Be", name: "Beryllium", mass: "9.0122", category: "alkaline-earth", state: "solid", group: 2, period: 2, block: "s", config: "[He] 2s²", shells: [2, 2], year: "1798", discoverer: "Louis-Nicolas Vauquelin", density: "1.85", melt: "1287", boil: "2469", electronegativity: "1.57", summary: "Lightweight, strong, brittle alkaline earth metal with high melting point.", uses: "Aerospace structures, X-ray tube windows, copper-beryllium alloys, satellites." },
+            { number: 5, symbol: "B", name: "Boron", mass: "10.81", category: "metalloid", state: "solid", group: 13, period: 2, block: "p", config: "[He] 2s² 2p¹", shells: [2, 3], year: "1808", discoverer: "Joseph Louis Gay-Lussac, Louis Jacques Thénard", density: "2.34", melt: "2076", boil: "3927", electronegativity: "2.04", summary: "Low-density metalloid used to strengthen glass and ceramics.", uses: "Borosilicate glass (Pyrex), fiberglass, semiconductors, boron carbide armor." },
+            { number: 6, symbol: "C", name: "Carbon", mass: "12.011", category: "reactive-nonmetal", state: "solid", group: 14, period: 2, block: "p", config: "[He] 2s² 2p²", shells: [2, 4], year: "Prehistoric", discoverer: "Ancient civilizations", density: "2.267", melt: "3550", boil: "4027", electronegativity: "2.55", summary: "Basis of all known organic life; exists as graphite, diamond, and fullerenes.", uses: "Steelmaking, plastics, organic chemistry, carbon fiber composites, diamonds." },
+            { number: 7, symbol: "N", name: "Nitrogen", mass: "14.007", category: "reactive-nonmetal", state: "gas", group: 15, period: 2, block: "p", config: "[He] 2s² 2p³", shells: [2, 5], year: "1772", discoverer: "Daniel Rutherford", density: "0.0012506", melt: "-210.00", boil: "-195.79", electronegativity: "3.04", summary: "Abundant gas making up ~78% of Earth's atmosphere; essential for amino acids.", uses: "Fertilizers, liquid nitrogen refrigerant, food packaging inert atmosphere." },
+            { number: 8, symbol: "O", name: "Oxygen", mass: "15.999", category: "reactive-nonmetal", state: "gas", group: 16, period: 2, block: "p", config: "[He] 2s² 2p⁴", shells: [2, 6], year: "1774", discoverer: "Joseph Priestley, Carl Wilhelm Scheele", density: "0.001429", melt: "-218.79", boil: "-182.96", electronegativity: "3.44", summary: "Highly reactive nonmetal making up ~21% of air; vital for aerobic respiration.", uses: "Medical oxygen therapy, steel refining, rocket propellants, water treatment." },
+            { number: 9, symbol: "F", name: "Fluorine", mass: "18.998", category: "halogen", state: "gas", group: 17, period: 2, block: "p", config: "[He] 2s² 2p⁵", shells: [2, 7], year: "1886", discoverer: "Henri Moissan", density: "0.001696", melt: "-219.67", boil: "-188.11", electronegativity: "3.98", summary: "Extremely reactive, pale yellow halogen gas; most electronegative element.", uses: "Toothpaste fluoride, Teflon coatings, refrigerant gases, uranium enrichment." },
+            { number: 10, symbol: "Ne", name: "Neon", mass: "20.180", category: "noble-gas", state: "gas", group: 18, period: 2, block: "p", config: "[He] 2s² 2p⁶", shells: [2, 8], year: "1898", discoverer: "William Ramsay, Morris Travers", density: "0.0009002", melt: "-248.59", boil: "-246.08", electronegativity: "N/A", summary: "Colorless gas that glows reddish-orange in high-voltage electrical discharge.", uses: "Neon signage, high-voltage indicators, gas lasers, cryogenic refrigeration." },
+            { number: 11, symbol: "Na", name: "Sodium", mass: "22.990", category: "alkali-metal", state: "solid", group: 1, period: 3, block: "s", config: "[Ne] 3s¹", shells: [2, 8, 1], year: "1807", discoverer: "Humphry Davy", density: "0.968", melt: "97.79", boil: "882.9", electronegativity: "0.93", summary: "Soft, silvery, highly reactive alkali metal; essential for nerve transmission.", uses: "Table salt (NaCl), street lighting, chemical synthesis, heat exchanger in reactors." },
+            { number: 12, symbol: "Mg", name: "Magnesium", mass: "24.305", category: "alkaline-earth", state: "solid", group: 2, period: 3, block: "s", config: "[Ne] 3s²", shells: [2, 8, 2], year: "1755", discoverer: "Joseph Black", density: "1.738", melt: "650", boil: "1090", electronegativity: "1.31", summary: "Lightweight structural metal that burns with a brilliant white light.", uses: "Automotive/aerospace alloys, fireworks, flares, structural framing, dietary supplements." },
+            { number: 13, symbol: "Al", name: "Aluminium", mass: "26.982", category: "post-transition", state: "solid", group: 13, period: 3, block: "p", config: "[Ne] 3s² 3p¹", shells: [2, 8, 3], year: "1825", discoverer: "Hans Christian Ørsted", density: "2.70", melt: "660.32", boil: "2470", electronegativity: "1.61", summary: "Abundant, low-density, corrosion-resistant post-transition metal.", uses: "Beverage cans, aircraft frames, foil, window frames, electrical transmission lines." },
+            { number: 14, symbol: "Si", name: "Silicon", mass: "28.085", category: "metalloid", state: "solid", group: 14, period: 3, block: "p", config: "[Ne] 3s² 3p²", shells: [2, 8, 4], year: "1824", discoverer: "Jöns Jacob Berzelius", density: "2.329", melt: "1414", boil: "3265", electronegativity: "1.90", summary: "Hard crystalline metalloid; core material for modern electronics and solar cells.", uses: "Microchips, computer processors, solar panels, silicones, glass, concrete." },
+            { number: 15, symbol: "P", name: "Phosphorus", mass: "30.974", category: "reactive-nonmetal", state: "solid", group: 15, period: 3, block: "p", config: "[Ne] 3s² 3p³", shells: [2, 8, 5], year: "1669", discoverer: "Hennig Brand", density: "1.823", melt: "44.15", boil: "280.5", electronegativity: "2.19", summary: "Essential nonmetal present in DNA, RNA, and cell membranes; red and white allotropes.", uses: "Fertilizers, matches, pyrotechnics, detergents, pesticides." },
+            { number: 16, symbol: "S", name: "Sulfur", mass: "32.06", category: "reactive-nonmetal", state: "solid", group: 16, period: 3, block: "p", config: "[Ne] 3s² 3p⁴", shells: [2, 8, 6], year: "Prehistoric", discoverer: "Ancient civilizations", density: "2.07", melt: "115.21", boil: "444.6", electronegativity: "2.58", summary: "Bright yellow crystalline solid nonmetal with a distinct odor when burned.", uses: "Sulfuric acid production, rubber vulcanization, gunpowder, fungicides, matches." },
+            { number: 17, symbol: "Cl", name: "Chlorine", mass: "35.45", category: "halogen", state: "gas", group: 17, period: 3, block: "p", config: "[Ne] 3s² 3p⁵", shells: [2, 8, 7], year: "1774", discoverer: "Carl Wilhelm Scheele", density: "0.003214", melt: "-101.50", boil: "-34.04", electronegativity: "3.16", summary: "Yellow-green halogen gas with strong disinfectant and bleaching properties.", uses: "Water sanitation, PVC piping, disinfectants, pharmaceuticals, bleaching paper." },
+            { number: 18, symbol: "Ar", name: "Argon", mass: "39.948", category: "noble-gas", state: "gas", group: 18, period: 3, block: "p", config: "[Ne] 3s² 3p⁶", shells: [2, 8, 8], year: "1894", discoverer: "Lord Rayleigh, William Ramsay", density: "0.001784", melt: "-189.34", boil: "-185.85", electronegativity: "N/A", summary: "Third most abundant atmospheric gas; chemically inert noble gas.", uses: "Shielding gas for welding, double-pane window insulation, incandescent lighting." },
+            { number: 19, symbol: "K", name: "Potassium", mass: "39.098", category: "alkali-metal", state: "solid", group: 1, period: 4, block: "s", config: "[Ar] 4s¹", shells: [2, 8, 8, 1], year: "1807", discoverer: "Humphry Davy", density: "0.862", melt: "63.5", boil: "759", electronegativity: "0.82", summary: "Soft, silvery alkali metal that reacts vigorously with water.", uses: "Agricultural fertilizers, soaps, glassmaking, vital biological electrolyte." },
+            { number: 20, symbol: "Ca", name: "Calcium", mass: "40.078", category: "alkaline-earth", state: "solid", group: 2, period: 4, block: "s", config: "[Ar] 4s²", shells: [2, 8, 8, 2], year: "1808", discoverer: "Humphry Davy", density: "1.54", melt: "842", boil: "1484", electronegativity: "1.00", summary: "Essential alkaline earth metal for bones, teeth, and structural biology.", uses: "Cement, concrete, steel refining, calcium supplements, cheese making." }
+        ];
+
+        // --- EXTENDED DATA GENERATION FOR ALL 118 ELEMENTS ---
+        const rawExtendedData = [
+            // Period 4 Transition & Main Group
+            { n: 21, s: "Sc", name: "Scandium", m: "44.956", cat: "transition-metal", st: "solid", g: 3, p: 4, b: "d", u: "Aerospace components, aluminum-scandium alloys, stadium lighting." },
+            { n: 22, s: "Ti", name: "Titanium", m: "47.867", cat: "transition-metal", st: "solid", g: 4, p: 4, b: "d", u: "Aircraft engines, medical implants, high-strength alloys, white pigments." },
+            { n: 23, s: "V", name: "Vanadium", m: "50.942", cat: "transition-metal", st: "solid", g: 5, p: 4, b: "d", u: "Steel hardening alloys, vanadium redox flow batteries, jet engines." },
+            { n: 24, s: "Cr", name: "Chromium", m: "51.996", cat: "transition-metal", st: "solid", g: 6, p: 4, b: "d", u: "Stainless steel manufacturing, chrome plating, pigment coloring." },
+            { n: 25, s: "Mn", name: "Manganese", m: "54.938", cat: "transition-metal", st: "solid", g: 7, p: 4, b: "d", u: "Steel production, battery cathodes, aluminum beverage cans." },
+            { n: 26, s: "Fe", name: "Iron", m: "55.845", cat: "transition-metal", st: "solid", g: 8, p: 4, b: "d", u: "Steelmaking, construction infrastructure, tools, hemoglobin in blood." },
+            { n: 27, s: "Co", name: "Cobalt", m: "58.933", cat: "transition-metal", st: "solid", g: 9, p: 4, b: "d", u: "Lithium-ion EV batteries, superalloys for turbines, blue pigments." },
+            { n: 28, s: "Ni", name: "Nickel", m: "58.693", cat: "transition-metal", st: "solid", g: 10, p: 4, b: "d", u: "Stainless steel, rechargeable batteries, coinage, electroplating." },
+            { n: 29, s: "Cu", name: "Copper", m: "63.546", cat: "transition-metal", st: "solid", g: 11, p: 4, b: "d", u: "Electrical wiring, motors, plumbing, brass and bronze alloys." },
+            { n: 30, s: "Zn", name: "Zinc", m: "65.38", cat: "transition-metal", st: "solid", g: 12, p: 4, b: "d", u: "Galvanizing steel against rust, brass creation, sunscreen formulations." },
+            { n: 31, s: "Ga", name: "Gallium", m: "69.723", cat: "post-transition", st: "solid", g: 13, p: 4, b: "p", u: "Semiconductors (GaAs), LEDs, laser diodes, high-temperature thermometers." },
+            { n: 32, s: "Ge", name: "Germanium", m: "72.630", cat: "metalloid", st: "solid", g: 14, p: 4, b: "p", u: "Fiber optics, night-vision infrared optics, solar cells, transistors." },
+            { n: 33, s: "As", name: "Arsenic", m: "74.922", cat: "metalloid", st: "solid", g: 15, p: 4, b: "p", u: "Gallium arsenide semiconductors, wood preservatives, pyrotechnics." },
+            { n: 34, s: "Se", name: "Selenium", m: "78.971", cat: "reactive-nonmetal", st: "solid", g: 16, p: 4, b: "p", u: "Photocopiers, glass tinting, anti-dandruff shampoos, solar panels." },
+            { n: 35, s: "Br", name: "Bromine", m: "79.904", cat: "halogen", st: "liquid", g: 17, p: 4, b: "p", u: "Flame retardants, water treatment chemicals, pharmaceuticals, dyes." },
+            { n: 36, s: "Kr", name: "Krypton", m: "83.798", cat: "noble-gas", st: "gas", g: 18, p: 4, b: "p", u: "Energy-efficient double-pane windows, airport runway lighting, flash lamps." },
+
+            // Period 5
+            { n: 37, s: "Rb", name: "Rubidium", m: "85.468", cat: "alkali-metal", st: "solid", g: 1, p: 5, b: "s", u: "Atomic clocks, photocells, specialty glass, vacuum tubes." },
+            { n: 38, s: "Sr", name: "Strontium", m: "87.62", cat: "alkaline-earth", st: "solid", g: 2, p: 5, b: "s", u: "Red fireworks and flares, ferrite magnets, cancer radiation therapy." },
+            { n: 39, s: "Y", name: "Yttrium", m: "88.906", cat: "transition-metal", st: "solid", g: 3, p: 5, b: "d", u: "LEDs, superconductors, camera lenses, YAG lasers, TV phosphors." },
+            { n: 40, s: "Zr", name: "Zirconium", m: "91.224", cat: "transition-metal", st: "solid", g: 4, p: 5, b: "d", u: "Nuclear reactor fuel cladding, synthetic cubic zirconia gems, ceramics." },
+            { n: 41, s: "Nb", name: "Niobium", m: "92.906", cat: "transition-metal", st: "solid", g: 5, p: 5, b: "d", u: "Superconducting magnets for MRI machines, high-strength steel alloys." },
+            { n: 42, s: "Mo", name: "Molybdenum", m: "95.95", cat: "transition-metal", st: "solid", g: 6, p: 5, b: "d", u: "High-temperature steel alloys, industrial lubricants, catalysts." },
+            { n: 43, s: "Tc", name: "Technetium", m: "98", cat: "transition-metal", st: "synthetic", g: 7, p: 5, b: "d", u: "Radioactive medical diagnostic imaging and organ scanning." },
+            { n: 44, s: "Ru", name: "Ruthenium", m: "101.07", cat: "transition-metal", st: "solid", g: 8, p: 5, b: "d", u: "Wear-resistant electrical contacts, chip resistors, solar energy cells." },
+            { n: 45, s: "Rh", name: "Rhodium", m: "103.91", cat: "transition-metal", st: "solid", g: 9, p: 5, b: "d", u: "Catalytic converters for emissions, high-end jewelry plating, mirrors." },
+            { n: 46, s: "Pd", name: "Palladium", m: "106.42", cat: "transition-metal", st: "solid", g: 10, p: 5, b: "d", u: "Catalytic converters, hydrogen purification, electronics, dentistry." },
+            { n: 47, s: "Ag", name: "Silver", m: "107.87", cat: "transition-metal", st: "solid", g: 11, p: 5, b: "d", u: "Jewelry, solar panels, electrical contacts, mirrors, antibacterial gear." },
+            { n: 48, s: "Cd", name: "Cadmium", m: "112.41", cat: "transition-metal", st: "solid", g: 12, p: 5, b: "d", u: "NiCd rechargeable batteries, yellow pigments, corrosion barrier coating." },
+            { n: 49, s: "In", name: "Indium", m: "114.82", cat: "post-transition", st: "solid", g: 13, p: 5, b: "p", u: "Indium Tin Oxide (ITO) touchscreens, flat panel displays, low-melt solders." },
+            { n: 50, s: "Sn", name: "Tin", m: "118.71", cat: "post-transition", st: "solid", g: 14, p: 5, b: "p", u: "Soldering electronics, tin cans coating, bronze and pewter metal alloys." },
+            { n: 51, s: "Sb", name: "Antimony", m: "121.76", cat: "metalloid", st: "solid", g: 15, p: 5, b: "p", u: "Flame retardants, lead-acid battery hardening, microelectronics." },
+            { n: 52, s: "Te", name: "Tellurium", m: "127.60", cat: "metalloid", st: "solid", g: 16, p: 5, b: "p", u: "Cadmium-telluride solar panels, rewritable CDs/DVDs, thermoelectric devices." },
+            { n: 53, s: "I", name: "Iodine", m: "126.90", cat: "halogen", st: "solid", g: 17, p: 5, b: "p", u: "Medical antiseptics, thyroid health, table salt additive, contrast agents." },
+            { n: 54, s: "Xe", name: "Xenon", m: "131.29", cat: "noble-gas", st: "gas", g: 18, p: 5, b: "p", u: "Ion thrusters for satellites, high-intensity arc lamps, general anesthetics." },
+
+            // Period 6
+            { n: 55, s: "Cs", name: "Caesium", m: "132.91", cat: "alkali-metal", st: "solid", g: 1, p: 6, b: "s", u: "Ultra-precise atomic time standards, drilling fluids, photoelectric cells." },
+            { n: 56, s: "Ba", name: "Barium", m: "137.33", cat: "alkaline-earth", st: "solid", g: 2, p: 6, b: "s", u: "Medical GI tract X-ray contrast, oil well drilling fluids, glass manufacturing." },
+            
+            // Lanthanides (57-71) - f-block
+            { n: 57, s: "La", name: "Lanthanum", m: "138.91", cat: "lanthanide", st: "solid", g: 3, p: 6, b: "f", u: "Hybrid car batteries, studio camera lenses, hydrogen storage alloys." },
+            { n: 58, s: "Ce", name: "Cerium", m: "140.12", cat: "lanthanide", st: "solid", g: 4, p: 6, b: "f", u: "Self-cleaning oven catalysts, lighter flints, glass polishing powder." },
+            { n: 59, s: "Pr", name: "Praseodymium", m: "140.91", cat: "lanthanide", st: "solid", g: 5, p: 6, b: "f", u: "High-strength magnets, aircraft engines, yellow glass goggles for welders." },
+            { n: 60, s: "Nd", name: "Neodymium", m: "144.24", cat: "lanthanide", st: "solid", g: 6, p: 6, b: "f", u: "Super-strong permanent magnets for EV motors, headphones, wind turbines." },
+            { n: 61, s: "Pm", name: "Promethium", m: "145", cat: "lanthanide", st: "synthetic", g: 7, p: 6, b: "f", u: "Nuclear batteries for pacemakers and space probes, luminous paint." },
+            { n: 62, s: "Sm", name: "Samarium", m: "150.36", cat: "lanthanide", st: "solid", g: 8, p: 6, b: "f", u: "Samarium-cobalt high-temp magnets, cancer treatments, optical lasers." },
+            { n: 63, s: "Eu", name: "Europium", m: "151.96", cat: "lanthanide", st: "solid", g: 9, p: 6, b: "f", u: "Red phosphors for TV displays, security anti-counterfeiting ink in Euro notes." },
+            { n: 64, s: "Gd", name: "Gadolinium", m: "157.25", cat: "lanthanide", st: "solid", g: 10, p: 6, b: "f", u: "MRI contrast enhancement, neutron radiography, nuclear marine propulsion." },
+            { n: 65, s: "Tb", name: "Terbium", m: "158.93", cat: "lanthanide", st: "solid", g: 11, p: 6, b: "f", u: "Green phosphors for displays, sonar sensors, solid-state electronics." },
+            { n: 66, s: "Dy", name: "Dysprosium", m: "162.50", cat: "lanthanide", st: "solid", g: 12, p: 6, b: "f", u: "Heat-resistant NdFeB magnets for electric cars, control rods in reactors." },
+            { n: 67, s: "Ho", name: "Holmium", m: "164.93", cat: "lanthanide", st: "solid", g: 13, p: 6, b: "f", u: "High-power surgical lasers, ultra-strong magnetic field concentrators." },
+            { n: 68, s: "Er", name: "Erbium", m: "167.26", cat: "lanthanide", st: "solid", g: 14, p: 6, b: "f", u: "Fiber optic signal amplifiers, dermatological laser surgery, pink glass tint." },
+            { n: 69, s: "Tm", name: "Thulium", m: "168.93", cat: "lanthanide", st: "solid", g: 15, p: 6, b: "f", u: "Portable medical X-ray machines, high-efficiency solid-state lasers." },
+            { n: 70, s: "Yb", name: "Ytterbium", m: "173.05", cat: "lanthanide", st: "solid", g: 16, p: 6, b: "f", u: "Fiber optic lasers, atomic clock research, stress gauges for earthquake monitoring." },
+            { n: 71, s: "Lu", name: "Lutetium", m: "174.97", cat: "lanthanide", st: "solid", g: 17, p: 6, b: "f", u: "PET scan detectors in cancer medicine, catalysts in petroleum cracking." },
+
+            // Period 6 Main Grid Transition Metal Continuation
+            { n: 72, s: "Hf", name: "Hafnium", m: "178.49", cat: "transition-metal", st: "solid", g: 4, p: 6, b: "d", u: "Microprocessor gate dielectrics, nuclear submarine control rods." },
+            { n: 73, s: "Ta", name: "Tantalum", m: "180.95", cat: "transition-metal", st: "solid", g: 5, p: 6, b: "d", u: "Miniature capacitors in smartphones/laptops, surgical implants." },
+            { n: 74, s: "W", name: "Tungsten", m: "183.84", cat: "transition-metal", st: "solid", g: 6, p: 6, b: "d", u: "Light bulb filaments, armor-piercing ammunition, rocket engine nozzles." },
+            { n: 75, s: "Re", name: "Rhenium", m: "186.21", cat: "transition-metal", st: "solid", g: 7, p: 6, b: "d", u: "Nickel-based superalloys for jet engine turbine blades, catalysts." },
+            { n: 76, s: "Os", name: "Osmium", m: "190.23", cat: "transition-metal", st: "solid", g: 8, p: 6, b: "d", u: "Densest natural element; fountain pen nibs, electrical contacts, stain for microscopy." },
+            { n: 77, s: "Ir", name: "Iridium", m: "192.22", cat: "transition-metal", st: "solid", g: 9, p: 6, b: "d", u: "Spark plugs, high-temperature crucibles, international standard kilogram." },
+            { n: 78, s: "Pt", name: "Platinum", m: "195.08", cat: "transition-metal", st: "solid", g: 10, p: 6, b: "d", u: "Catalytic converters, jewelry, chemotherapy drugs (cisplatin), laboratory gear." },
+            { n: 79, s: "Au", name: "Gold", m: "196.97", cat: "transition-metal", st: "solid", g: 11, p: 6, b: "d", u: "Currency reserve, fine jewelry, corrosion-free microelectronics wiring." },
+            { n: 80, s: "Hg", name: "Mercury", m: "200.59", cat: "transition-metal", st: "liquid", g: 12, p: 6, b: "d", u: "Thermometers, barometers, fluorescent lamps, dental amalgams." },
+            { n: 81, s: "Tl", name: "Thallium", m: "204.38", cat: "post-transition", st: "solid", g: 13, p: 6, b: "p", u: "Infrared optical detectors, glass manufacturing, medical cardiac imaging." },
+            { n: 82, s: "Pb", name: "Lead", m: "207.2", cat: "post-transition", st: "solid", g: 14, p: 6, b: "p", u: "Car batteries, radiation shielding for X-rays, soundproofing materials." },
+            { n: 83, s: "Bi", name: "Bismuth", m: "208.98", cat: "post-transition", st: "solid", g: 15, p: 6, b: "p", u: "Pepto-Bismol pharmaceuticals, non-toxic shot, fire sprinkler triggers." },
+            { n: 84, s: "Po", name: "Polonium", m: "209", cat: "post-transition", st: "solid", g: 16, p: 6, b: "p", u: "Eliminating static electricity in industrial machinery, space probe heat sources." },
+            { n: 85, s: "At", name: "Astatine", m: "210", cat: "halogen", st: "solid", g: 17, p: 6, b: "p", u: "Targeted alpha-particle radiation therapy for treating cancer tumors." },
+            { n: 86, s: "Rn", name: "Radon", m: "222", cat: "noble-gas", st: "gas", g: 18, p: 6, b: "p", u: "Historically used in cancer radiotherapy; radioactive indoor air hazard indicator." },
+
+            // Period 7
+            { n: 87, s: "Fr", name: "Francium", m: "223", cat: "alkali-metal", st: "solid", g: 1, p: 7, b: "s", u: "Highly unstable radioactive element; used exclusively in fundamental atomic research." },
+            { n: 88, s: "Ra", name: "Radium", m: "226", cat: "alkaline-earth", st: "solid", g: 2, p: 7, b: "s", u: "Historically used in glow-in-the-dark watch dials and industrial radiography." },
+
+            // Actinides (89-103) - f-block
+            { n: 89, s: "Ac", name: "Actinium", m: "227", cat: "actinide", st: "solid", g: 3, p: 7, b: "f", u: "Neutron source, targeted alpha therapy medicine for advanced cancer treatment." },
+            { n: 90, s: "Th", name: "Thorium", m: "232.04", cat: "actinide", st: "solid", g: 4, p: 7, b: "f", u: "Potential cleaner nuclear power reactor fuel, lantern mantles, arc welding electrodes." },
+            { n: 91, s: "Pa", name: "Protactinium", m: "231.04", cat: "actinide", st: "solid", g: 5, p: 7, b: "f", u: "Radioactive research element; radiometric dating of ocean sediments." },
+            { n: 92, s: "U", name: "Uranium", m: "238.03", cat: "actinide", st: "solid", g: 6, p: 7, b: "f", u: "Nuclear power plants electrical generation, naval propulsion, armor plating." },
+            { n: 93, s: "Np", name: "Neptunium", m: "237", cat: "actinide", st: "synthetic", g: 7, p: 7, b: "f", u: "Precursor element for Plutonium-238 production used in deep-space probes." },
+            { n: 94, s: "Pu", name: "Plutonium", m: "244", cat: "actinide", st: "synthetic", g: 8, p: 7, b: "f", u: "Nuclear weapons, RTG power supplies for NASA Mars rovers and Voyager probes." },
+            { n: 95, s: "Am", name: "Americium", m: "243", cat: "actinide", st: "synthetic", g: 9, p: 7, b: "f", u: "Ionization smoke detectors in homes, industrial thickness gauges." },
+            { n: 96, s: "Cm", name: "Curium", m: "247", cat: "actinide", st: "synthetic", g: 10, p: 7, b: "f", u: "Alpha particle X-ray spectrometers for Mars rovers, power sources." },
+            { n: 97, s: "Bk", name: "Berkelium", m: "247", cat: "actinide", st: "synthetic", g: 11, p: 7, b: "f", u: "Target material to synthesize heavier superheavy elements like Tennessine." },
+            { n: 98, s: "Cf", name: "Californium", m: "251", cat: "actinide", st: "synthetic", g: 12, p: 7, b: "f", u: "Neutron emitters for startup of nuclear reactors, searching oil wells." },
+            { n: 99, s: "Es", name: "Einsteinium", m: "252", cat: "actinide", st: "synthetic", g: 13, p: 7, b: "f", u: "Discovered in debris of first hydrogen bomb test; fundamental chemistry study." },
+            { n: 100, s: "Fm", name: "Fermium", m: "257", cat: "actinide", st: "synthetic", g: 14, p: 7, b: "f", u: "Produced in minute quantities for basic nuclear physics and chemistry research." },
+            { n: 101, s: "Md", name: "Mendelevium", m: "258", cat: "actinide", st: "synthetic", g: 15, p: 7, b: "f", u: "Named in honor of Dmitri Mendeleev; heavy ion collision research." },
+            { n: 102, s: "No", name: "Nobelium", m: "259", cat: "actinide", st: "synthetic", g: 16, p: 7, b: "f", u: "Named after Alfred Nobel; produced exclusively in particle accelerators." },
+            { n: 103, s: "Lr", name: "Lawrencium", m: "266", cat: "actinide", st: "synthetic", g: 17, p: 7, b: "f", u: "Superheavy element synthesized for studying relativistic electron effects." },
+
+            // Period 7 Superheavy Main Grid Continuation
+            { n: 104, s: "Rf", name: "Rutherfordium", m: "267", cat: "transition-metal", st: "synthetic", g: 4, p: 7, b: "d", u: "Synthetic superheavy element; fundamental nuclear physics research." },
+            { n: 105, s: "Db", name: "Dubnium", m: "268", cat: "transition-metal", st: "synthetic", g: 5, p: 7, b: "d", u: "Synthetic element named after Dubna, Russia nuclear research institute." },
+            { n: 106, s: "Sg", name: "Seaborgium", m: "269", cat: "transition-metal", st: "synthetic", g: 6, p: 7, b: "d", u: "Named after Glenn T. Seaborg; short-lived laboratory synthesis." },
+            { n: 107, s: "Bh", name: "Bohrium", m: "270", cat: "transition-metal", st: "synthetic", g: 7, p: 7, b: "d", u: "Named after Niels Bohr; synthesized via heavy-ion bombardment." },
+            { n: 108, s: "Hs", name: "Hassium", m: "277", cat: "transition-metal", st: "synthetic", g: 8, p: 7, b: "d", u: "Named after German state of Hesse; superheavy element research." },
+            { n: 109, s: "Mt", name: "Meitnerium", m: "278", cat: "transition-metal", st: "synthetic", g: 9, p: 7, b: "d", u: "Named after Lise Meitner; extremely short half-life isotope studies." },
+            { n: 110, s: "Ds", name: "Darmstadtium", m: "281", cat: "transition-metal", st: "synthetic", g: 10, p: 7, b: "d", u: "Created in Darmstadt Germany; synthesized atom-by-atom in particle accelerators." },
+            { n: 111, s: "Rg", name: "Roentgenium", m: "282", cat: "transition-metal", st: "synthetic", g: 11, p: 7, b: "d", u: "Named after Wilhelm Röntgen; superheavy radioactive isotope research." },
+            { n: 112, s: "Cn", name: "Copernicium", m: "285", cat: "transition-metal", st: "synthetic", g: 12, p: 7, b: "d", u: "Named after Nicolaus Copernicus; volatile metal characteristics study." },
+            { n: 113, s: "Nh", name: "Nihonium", m: "286", cat: "post-transition", st: "synthetic", g: 13, p: 7, b: "p", u: "First element discovered in Asia (RIKEN institute Japan)." },
+            { n: 114, s: "Fl", name: "Flerovium", m: "289", cat: "post-transition", st: "synthetic", g: 14, p: 7, b: "p", u: "Superheavy element studied for predicted 'island of stability'." },
+            { n: 115, s: "Mc", name: "Moscovium", m: "290", cat: "post-transition", st: "synthetic", g: 15, p: 7, b: "p", u: "Synthesized by bombarding Americium-243 with Calcium-48 ions." },
+            { n: 116, s: "Lv", name: "Livermorium", m: "293", cat: "post-transition", st: "synthetic", g: 16, p: 7, b: "p", u: "Named after Lawrence Livermore National Laboratory in California." },
+            { n: 117, s: "Ts", name: "Tennessine", m: "294", cat: "halogen", st: "synthetic", g: 17, p: 7, b: "p", u: "Second heaviest known element; superheavy halogen group member." },
+            { n: 118, s: "Og", name: "Oganesson", m: "294", cat: "noble-gas", st: "synthetic", g: 18, p: 7, b: "p", u: "Heaviest element on periodic table; named after Yuri Oganessian." }
+        ];
+
+        // Process Extended Dataset
+        rawExtendedData.forEach(item => {
+            const configMap = {
+                s: `[Gas] ${item.p}s`,
+                p: `[Core] ${item.p}p`,
+                d: `[Core] (d-subshell)`,
+                f: `[Core] (f-subshell)`
+            };
+            elementsData.push({
+                number: item.n,
+                symbol: item.s,
+                name: item.name,
+                mass: item.m,
+                category: item.cat,
+                state: item.st || "solid",
+                group: item.g,
+                period: item.p,
+                block: item.b,
+                config: configMap[item.b] || "N/A",
+                shells: item.b === 'f' ? [2, 8, 18, 32, 18, 8, 2] : [2, 8, 18, 32],
+                year: item.n > 92 ? "Modern (1940+)" : "1800-1900",
+                discoverer: "Particle Accelerator / Research Lab",
+                density: "Variable",
+                melt: "N/A",
+                boil: "N/A",
+                electronegativity: "N/A",
+                summary: `Chemical element ${item.name} with symbol ${item.s} and atomic number ${item.n}.`,
+                uses: item.u || "Research and scientific studies."
+            });
+        });
+
+        // --- DOM REFERENCES ---
+        const mainGrid = document.getElementById('main-periodic-table');
+        const lanthanidesRow = document.getElementById('lanthanides-row');
+        const actinidesRow = document.getElementById('actinides-row');
+        const legendContainer = document.getElementById('legend-container');
+        const searchInput = document.getElementById('search-input');
+        const clearSearchBtn = document.getElementById('clear-search');
+        const filterState = document.getElementById('filter-state');
+        const filterBlock = document.getElementById('filter-block');
+        const filterCategory = document.getElementById('filter-category');
+        const resultsCount = document.getElementById('results-count');
+        const btnReset = document.getElementById('btn-reset');
+        const btnRandom = document.getElementById('btn-random');
+
+        // Modal Elements
+        const modal = document.getElementById('element-modal');
+        const modalCard = document.getElementById('modal-card');
+        const modalClose = document.getElementById('modal-close');
+        const modalSymbolBox = document.getElementById('modal-symbol-box');
+        const modalAtomicNum = document.getElementById('modal-atomic-number');
+        const modalSymbol = document.getElementById('modal-symbol');
+        const modalWeight = document.getElementById('modal-weight');
+        const modalName = document.getElementById('modal-name');
+        const modalCatBadge = document.getElementById('modal-category-badge');
+        const modalStateBadge = document.getElementById('modal-state-badge');
+        const modalBlockBadge = document.getElementById('modal-block-badge');
+        const modalGroupPeriod = document.getElementById('modal-group-period');
+        const modalSummary = document.getElementById('modal-summary');
+        const modalElectronegativity = document.getElementById('modal-electronegativity');
+        const modalMelting = document.getElementById('modal-melting');
+        const modalBoiling = document.getElementById('modal-boiling');
+        const modalDiscovered = document.getElementById('modal-discovered');
+        const modalElectronConfig = document.getElementById('modal-electron-config');
+        const modalShells = document.getElementById('modal-shells');
+        const modalDensity = document.getElementById('modal-density');
+        const modalDiscoverer = document.getElementById('modal-discoverer');
+        const modalUses = document.getElementById('modal-uses');
+        const shellVisualizer = document.getElementById('shell-visualizer');
+
+        // --- CATEGORY METADATA ---
+        const categoryLabels = {
+            'alkali-metal': { title: 'Alkali Metal', class: 'cat-alkali-metal', color: '#ef4444' },
+            'alkaline-earth': { title: 'Alkaline Earth', class: 'cat-alkaline-earth', color: '#f97316' },
+            'transition-metal': { title: 'Transition Metal', class: 'cat-transition-metal', color: '#eab308' },
+            'post-transition': { title: 'Post-Transition', class: 'cat-post-transition', color: '#10b981' },
+            'metalloid': { title: 'Metalloid', class: 'cat-metalloid', color: '#14b8a6' },
+            'reactive-nonmetal': { title: 'Reactive Nonmetal', class: 'cat-reactive-nonmetal', color: '#06b6d4' },
+            'halogen': { title: 'Halogen', class: 'cat-halogen', color: '#3b82f6' },
+            'noble-gas': { title: 'Noble Gas', class: 'cat-noble-gas', color: '#8b5cf6' },
+            'lanthanide': { title: 'Lanthanide', class: 'cat-lanthanide', color: '#ec4899' },
+            'actinide': { title: 'Actinide', class: 'cat-actinide', color: '#f43f5e' }
+        };
+
+        // --- INITIALIZATION ---
+        function init() {
+            renderLegend();
+            renderTable();
+            setupEventListeners();
+        }
+
+        // Render Category Legend Bar
+        function renderLegend() {
+            legendContainer.innerHTML = '';
+            Object.keys(categoryLabels).forEach(catKey => {
+                const cat = categoryLabels[catKey];
+                const chip = document.createElement('button');
+                chip.className = `px-3 py-1 rounded-full text-[11px] font-medium border flex items-center gap-1.5 transition-all glass-card hover:scale-105 cursor-pointer`;
+                chip.style.borderColor = cat.color + '40';
+                chip.innerHTML = `
+                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${cat.color}"></span>
+                    <span class="text-slate-300">${cat.title}</span>
+                `;
+                chip.addEventListener('click', () => {
+                    filterCategory.value = filterCategory.value === catKey ? 'all' : catKey;
+                    applyFilters();
+                });
+                legendContainer.appendChild(chip);
+            });
+        }
+
+        // Helper: Create Tile Element
+        function createTile(el) {
+            const tile = document.createElement('div');
+            const catClass = categoryLabels[el.category]?.class || 'cat-unknown';
+            
+            tile.className = `element-tile ${catClass} glass-card p-1.5 rounded-xl flex flex-col justify-between cursor-pointer relative group`;
+            tile.dataset.number = el.number;
+            tile.dataset.symbol = el.symbol.toLowerCase();
+            tile.dataset.name = el.name.toLowerCase();
+            tile.dataset.category = el.category;
+            tile.dataset.state = el.state;
+            tile.dataset.block = el.block;
+
+            tile.innerHTML = `
+                <div class="flex justify-between items-center text-[10px] font-mono text-slate-400">
+                    <span>${el.number}</span>
+                    <span class="text-[8px] opacity-60 uppercase">${el.block}</span>
+                </div>
+                <div class="text-center my-0.5">
+                    <span class="text-base sm:text-lg font-extrabold text-white font-mono tracking-tight group-hover:scale-110 inline-block transition-transform">${el.symbol}</span>
+                </div>
+                <div class="text-center">
+                    <div class="text-[10px] font-medium text-slate-300 truncate leading-none mb-0.5">${el.name}</div>
+                    <div class="text-[8px] font-mono text-slate-500 truncate">${el.mass}</div>
+                </div>
+            `;
+
+            tile.addEventListener('click', () => openModal(el));
+            return tile;
+        }
+
+        // Render Periodic Table Grid with Dedicated f-block Layout
+        function renderTable() {
+            mainGrid.innerHTML = '';
+            lanthanidesRow.innerHTML = '';
+            actinidesRow.innerHTML = '';
+
+            elementsData.forEach(el => {
+                const num = el.number;
+
+                // Main Grid Elements (1-56, 72-88, 104-118)
+                if ((num >= 1 && num <= 56) || (num >= 72 && num <= 88) || (num >= 104 && num <= 118)) {
+                    const tile = createTile(el);
+                    tile.style.gridRow = el.period;
+                    tile.style.gridColumn = el.group;
+                    mainGrid.appendChild(tile);
+                } 
+                // Lanthanides Dedicated Bottom Row (57-71)
+                else if (num >= 57 && num <= 71) {
+                    const tile = createTile(el);
+                    lanthanidesRow.appendChild(tile);
+                } 
+                // Actinides Dedicated Bottom Row (89-103)
+                else if (num >= 89 && num <= 103) {
+                    const tile = createTile(el);
+                    actinidesRow.appendChild(tile);
+                }
+            });
+
+            // Insert f-block Placeholders into Main Grid (Group 3, Period 6 & Period 7)
+            
+            // Lanthanide Placeholder (57-71)
+            const lanthPlaceholder = document.createElement('div');
+            lanthPlaceholder.className = 'fblock-placeholder glass-card p-1.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer text-pink-400 group';
+            lanthPlaceholder.style.gridRow = 6;
+            lanthPlaceholder.style.gridColumn = 3;
+            lanthPlaceholder.innerHTML = `
+                <span class="text-[10px] font-mono font-bold">57-71</span>
+                <span class="text-xs font-extrabold font-mono text-pink-300 group-hover:scale-110 transition-transform">La-Lu</span>
+                <span class="text-[8px] tracking-tighter uppercase font-semibold text-slate-400 mt-0.5">Lanthanides</span>
+            `;
+            lanthPlaceholder.addEventListener('click', () => {
+                filterCategory.value = 'lanthanide';
+                applyFilters();
+            });
+            mainGrid.appendChild(lanthPlaceholder);
+
+            // Actinide Placeholder (89-103)
+            const actPlaceholder = document.createElement('div');
+            actPlaceholder.className = 'fblock-placeholder glass-card p-1.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer text-rose-400 group';
+            actPlaceholder.style.gridRow = 7;
+            actPlaceholder.style.gridColumn = 3;
+            actPlaceholder.innerHTML = `
+                <span class="text-[10px] font-mono font-bold">89-103</span>
+                <span class="text-xs font-extrabold font-mono text-rose-300 group-hover:scale-110 transition-transform">Ac-Lr</span>
+                <span class="text-[8px] tracking-tighter uppercase font-semibold text-slate-400 mt-0.5">Actinides</span>
+            `;
+            actPlaceholder.addEventListener('click', () => {
+                filterCategory.value = 'actinide';
+                applyFilters();
+            });
+            mainGrid.appendChild(actPlaceholder);
+        }
+
+        // --- FILTERING & SEARCH LOGIC ---
+        function applyFilters() {
+            const query = searchInput.value.trim().toLowerCase();
+            const selectedState = filterState.value;
+            const selectedBlock = filterBlock.value;
+            const selectedCategory = filterCategory.value;
+
+            let visibleCount = 0;
+            const allTiles = document.querySelectorAll('.element-tile');
+
+            allTiles.forEach(tile => {
+                const elNum = tile.dataset.number;
+                const elSym = tile.dataset.symbol;
+                const elName = tile.dataset.name;
+                const elCat = tile.dataset.category;
+                const elState = tile.dataset.state;
+                const elBlock = tile.dataset.block;
+
+                const matchesSearch = !query || elNum === query || elSym.includes(query) || elName.includes(query);
+                const matchesState = selectedState === 'all' || elState === selectedState;
+                const matchesBlock = selectedBlock === 'all' || elBlock === selectedBlock;
+                const matchesCategory = selectedCategory === 'all' || elCat === selectedCategory;
+
+                if (matchesSearch && matchesState && matchesBlock && matchesCategory) {
+                    tile.classList.remove('dimmed');
+                    if (query && (elSym === query || elNum === query || elName === query)) {
+                        tile.classList.add('highlighted');
+                    } else {
+                        tile.classList.remove('highlighted');
+                    }
+                    visibleCount++;
+                } else {
+                    tile.classList.add('dimmed');
+                    tile.classList.remove('highlighted');
+                }
+            });
+
+            resultsCount.textContent = `Showing ${visibleCount} / 118 Elements`;
+            clearSearchBtn.classList.toggle('hidden', !query);
+        }
+
+        // --- MODAL LOGIC & SHELL ANIMATION ---
+        function openModal(el) {
+            const catInfo = categoryLabels[el.category];
+
+            // Header Styling
+            modalSymbolBox.className = `w-24 h-24 rounded-2xl flex flex-col items-center justify-center border-2 border-white/20 shadow-xl relative bg-slate-900/80 shrink-0 ${catInfo?.class || ''}`;
+            modalAtomicNum.textContent = el.number;
+            modalSymbol.textContent = el.symbol;
+            modalWeight.textContent = el.mass;
+
+            modalName.textContent = el.name;
+            modalCatBadge.textContent = catInfo?.title || el.category;
+            modalCatBadge.style.backgroundColor = (catInfo?.color || '#6b7280') + '25';
+            modalCatBadge.style.borderColor = (catInfo?.color || '#6b7280') + '50';
+            modalCatBadge.style.color = catInfo?.color || '#ffffff';
+
+            // State Badge Style
+            modalStateBadge.className = `px-2 py-0.5 rounded text-[11px] font-medium badge-${el.state}`;
+            modalStateBadge.textContent = el.state.toUpperCase();
+
+            modalBlockBadge.textContent = `${el.block}-block`;
+            modalGroupPeriod.textContent = el.block === 'f' ? `${catInfo?.title} Series` : `Group ${el.group}, Period ${el.period}`;
+            modalSummary.textContent = el.summary;
+
+            // Stats
+            modalElectronegativity.textContent = el.electronegativity;
+            modalMelting.textContent = el.melt !== "N/A" ? `${el.melt} °C` : 'N/A';
+            modalBoiling.textContent = el.boil !== "N/A" ? `${el.boil} °C` : 'N/A';
+            modalDiscovered.textContent = el.year;
+
+            // Details
+            modalElectronConfig.textContent = el.config;
+            modalShells.textContent = Array.isArray(el.shells) ? el.shells.join(', ') : 'N/A';
+            modalDensity.textContent = el.density !== "Variable" && el.density !== "N/A" ? `${el.density} g/cm³` : el.density;
+            modalDiscoverer.textContent = el.discoverer;
+            modalUses.textContent = el.uses;
+
+            // Render Bohr Shell Model
+            renderShellVisualizer(el);
+
+            // Show Modal
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalCard.classList.remove('scale-95');
+            modalCard.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-95');
+        }
+
+        function renderShellVisualizer(el) {
+            // Clear existing rings except nucleus
+            shellVisualizer.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/50 flex items-center justify-center text-[10px] font-bold text-white z-10 font-mono border border-white/30">
+                    <span>${el.symbol}</span>
+                </div>
+            `;
+
+            const shellCounts = el.shells || [2];
+            const maxRadius = 65; // max orbit radius in px
+            const minRadius = 18;
+
+            shellCounts.forEach((count, idx) => {
+                const radius = minRadius + ((maxRadius - minRadius) / Math.max(shellCounts.length, 1)) * (idx + 1);
+                
+                // Orbit ring
+                const ring = document.createElement('div');
+                ring.className = 'electron-orbit';
+                ring.style.width = `${radius * 2}px`;
+                ring.style.height = `${radius * 2}px`;
+                shellVisualizer.appendChild(ring);
+
+                // Electron dots along ring
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * (2 * Math.PI);
+                    const e = document.createElement('div');
+                    e.className = 'electron';
+                    
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    
+                    e.style.transform = `translate(${x}px, ${y}px)`;
+                    ring.appendChild(e);
+                }
+            });
+        }
+
+        // --- EVENT LISTENERS ---
+        function setupEventListeners() {
+            // Live Search
+            searchInput.addEventListener('input', applyFilters);
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                applyFilters();
+                searchInput.focus();
+            });
+
+            // Filters
+            filterState.addEventListener('change', applyFilters);
+            filterBlock.addEventListener('change', applyFilters);
+            filterCategory.addEventListener('change', applyFilters);
+
+            // Quick Actions
+            btnReset.addEventListener('click', () => {
+                searchInput.value = '';
+                filterState.value = 'all';
+                filterBlock.value = 'all';
+                filterCategory.value = 'all';
+                applyFilters();
+            });
+
+            btnRandom.addEventListener('click', () => {
+                const randomIndex = Math.floor(Math.random() * elementsData.length);
+                openModal(elementsData[randomIndex]);
+            });
+
+            // Modal Dismiss
+            modalClose.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            // Keyboard Shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+                if (e.key === '/' && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+        }
+
+        // Initialize App on DOM ready
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
